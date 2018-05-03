@@ -20,18 +20,10 @@ def ori_url(url):
     bsobj = requests_bs(url)
     raws = bsobj.select('div.refinement.brand')
     hrefs = []
-    #names = []
     for raw in raws:
         for r in raw.select('a.refinement-link'):
             hrefs.append(r.get('href'))
-            #names.append(r.get('data-scroll')[6:])
     return hrefs
-
-# def brand_url(oris):
-#     brand_home_urls = []
-#     for url in oris:
-#         brand_home_urls.append(url + '&pageSize=-1')
-#     return brand_home_urls
 
 def getTotalBrandUrls(brandUrls):
     i = 1
@@ -64,7 +56,6 @@ def product(urls):
                 continue;
             list.append(pro_url)
     return list
-    #time.sleep(3)
 
 def concreteProduct(urls):
     finalResults = []
@@ -99,17 +90,9 @@ def writecsv(file,rows):
 if __name__ == '__main__':
     oris = ori_url(path)
     brand_urls = getTotalBrandUrls(oris[150:])
-    # i = 0;
-    # for ori in oris:
-    #     print(i, ": ", brand_urls[i])
-    #     i = i + 1;
 
-    #brand_urls = brand_url(oris)
+
     product_urls = product(brand_urls)
-    # j = 0
-    # for pro_url in product_urls:
-    #     print(j, ": ", pro_url)
-    #     j = j + 1
     finalResults = concreteProduct(product_urls)
     writecsv('data1.csv', finalResults)
 
