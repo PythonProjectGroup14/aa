@@ -8,14 +8,16 @@ import csv
 import requests
 from bs4 import BeautifulSoup
 
+#The address of the Belk website used to do the web scraping
 path = "https://www.belk.com/beauty/"
 
+#Return the beautifulsoup object
 def requests_bs(url):
     req = requests.get(url)
     bsobj = BeautifulSoup(req.text, 'html.parser')
     return bsobj
 
-
+#Get the original hrl used to do scraping
 def ori_url(url):
     bsobj = requests_bs(url)
     raws = bsobj.select('div.refinement.brand')
@@ -25,6 +27,7 @@ def ori_url(url):
             hrefs.append(r.get('href'))
     return hrefs
 
+#Get all the brand page URLs
 def getTotalBrandUrls(brandUrls):
     i = 1
     totalBrandUrls = []
@@ -44,7 +47,7 @@ def getTotalBrandUrls(brandUrls):
                 i = i + 1
     return totalBrandUrls
 
-
+#Get all the product urls
 def product(urls):
     list = []
     for url in urls:
@@ -57,6 +60,7 @@ def product(urls):
             list.append(pro_url)
     return list
 
+#Scrape the information from those product urls
 def concreteProduct(urls):
     finalResults = []
     for url in urls:
@@ -80,6 +84,7 @@ def concreteProduct(urls):
         finalResults.append(list)
     return finalResults
 
+#Write the collected data into csv file
 def writecsv(file,rows):
     with open(file,'a+',encoding='utf_8_sig',newline='') as file:
         w = csv.writer(file)
