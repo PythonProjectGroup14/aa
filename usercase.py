@@ -1,5 +1,6 @@
 import sys
 
+# find similar products
 def find(line):
     result=[]
     for item in sephora:
@@ -19,10 +20,12 @@ def similar(item, line):
         return True
     return False
 
+#update products that has lower price and notify customers
 def update(name, line, dict):
     dict[name]=line
     print line
 
+    #suggest products based on requirements of customers
 def suggest(price, name):
     results=[]
     for item in sephora:
