@@ -4,6 +4,8 @@ Created on Fri Apr 13 21:27:57 2018
 
 @author: Yingqi Li
 """
+
+# import all libraries
 import urllib
 from urllib.request import urlretrieve, Request, urlopen
 import datetime
@@ -16,15 +18,17 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.common.exceptions import StaleElementReferenceException
 import csv
 
+## the main link
 path = "https://www.sephora.com/brand/list.jsp"
 
+# return the BeautifulSoup object
 def requests_bs(url):
     headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36',}
     req = requests.get(url,headers=headers)
     bsobj = BeautifulSoup(req.text, 'html.parser')
     return bsobj
 
-
+# get the target links/refs
 def get_ori_url(url):
     bsobj = requests_bs(url)
     raws = bsobj.select('a.u-hoverRed.u-db.u-p1')
@@ -35,12 +39,14 @@ def get_ori_url(url):
         names.append(raw.get_text())
     return hrefs, names
 
+#get links for each brand
 def get_brand_url(oris):
     brand_home_urls = []
     for url in oris:
         brand_home_urls.append('https://www.sephora.com' + url + '?products=all&pageSize=-1')
     return brand_home_urls
 
+#get links for each product
 def get_product_links(bsobj):
     #
     raws = bsobj.select('a.u-size1of4.SkuItem.SkuItem--135')
@@ -54,6 +60,7 @@ def get_product_links(bsobj):
         time.sleep(1)
     return urls
 
+# return the product detail
 def get_product_detail(bsobj):
     # get brand_name
     if bsobj.select('title') != []:
@@ -72,6 +79,7 @@ def get_product_detail(bsobj):
         product_name = ''
     return brand_name, product_name
 
+# return the price for each product
 def get_product_price(bsobj):
     #price = bsobj.select('css-18suhml')[0]
     price = bsobj.find_all('div',{'data-comp':'Price Box'})
@@ -81,6 +89,7 @@ def get_product_price(bsobj):
         price = ''
     return price
 
+# return the image url for each product
 def get_product_image_url(bsobj):
     product_image_url = bsobj.find_all('image',{'style':'mask: url(#heroHoverMediaMask)'})
     if product_image_url != []:
@@ -91,6 +100,7 @@ def get_product_image_url(bsobj):
         product_image_url = ''
     return product_image_url
 
+#use phantomjs to wait until the link is opend
 def waitForLoad(driver):
     elem = driver.find_element_by_tag_name("html")
     count = 0
@@ -104,7 +114,8 @@ def waitForLoad(driver):
             elem == driver.find_element_by_tag_name("html")
         except StaleElementReferenceException:
             return
-
+        
+# write in csv file
 def writecsv(file,row):
     with open(file,'a+',encoding='utf_8_sig',newline='') as file:
         w = csv.writer(file)
